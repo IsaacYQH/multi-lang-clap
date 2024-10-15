@@ -495,7 +495,7 @@ class CLAP(nn.Module):
                 nn.Linear(self.joint_embed_shape, self.joint_embed_shape)
             )
         elif text_cfg.model_type == "bert":
-            self.text_branch = BertModel.from_pretrained("/data5/chaogang/project/CLAP-main/yiyong/bert-base-uncased")
+            self.text_branch = BertModel.from_pretrained()
             self.text_transform = MLPLayers(units=[self.joint_embed_shape,
                                                    self.joint_embed_shape,
                                                    self.joint_embed_shape], dropout=0.1)
@@ -505,7 +505,7 @@ class CLAP(nn.Module):
                 nn.Linear(self.joint_embed_shape, self.joint_embed_shape)
             )
         elif text_cfg.model_type == "roberta":
-            self.text_branch = RobertaModel.from_pretrained('/data5/chaogang/project/CLAP-main/yiyong/roberta-base')
+            self.text_branch = RobertaModel.from_pretrained('roberta-base')
             self.text_transform = MLPLayers(units=[self.joint_embed_shape,
                                                    self.joint_embed_shape,
                                                    self.joint_embed_shape], dropout=0.1)
@@ -515,7 +515,7 @@ class CLAP(nn.Module):
                 nn.Linear(self.joint_embed_shape, self.joint_embed_shape)
             )
         elif text_cfg.model_type == "bart":
-            self.text_branch = BartModel.from_pretrained('/data5/chaogang/project/CLAP-main/yiyong/bart-base')
+            self.text_branch = BartModel.from_pretrained()
             self.text_transform = MLPLayers(units=[self.joint_embed_shape,
                                                    self.joint_embed_shape,
                                                    self.joint_embed_shape], dropout=0.1)
@@ -526,7 +526,7 @@ class CLAP(nn.Module):
             )
         #多语言text_encoder
         elif text_cfg.model_type == "xlm-roberta":
-            self.text_branch = XLMRobertaModel.from_pretrained("/data5/isaac/xlm-roberta-base")
+            self.text_branch = XLMRobertaModel.from_pretrained()
             self.text_transform = MLPLayers(units=[self.joint_embed_shape,
                                                    self.joint_embed_shape,
                                                    self.joint_embed_shape], dropout=0.1)

@@ -4,7 +4,7 @@ import logging
 import math
 import os
 import random
-import h5py
+# import h5py
 from dataclasses import dataclass
 import braceexpand
 import numpy as np
@@ -43,14 +43,9 @@ try:
 except ImportError:
     torchaudio = None
 
-# bert_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
-# roberta_tokenizer = RobertaTokenizer.from_pretrained("roberta-base")
-# bart_tokenizer = BartTokenizer.from_pretrained("facebook/bart-base")
-
-bert_tokenizer = BertTokenizer.from_pretrained("/data5/chaogang/project/CLAP-main/yiyong/bert-base-uncased")
-roberta_tokenizer = RobertaTokenizer.from_pretrained("/data5/chaogang/project/CLAP-main/yiyong/roberta-base")
-bart_tokenizer = BartTokenizer.from_pretrained("/data5/chaogang/project/CLAP-main/yiyong/bart-base")
-xlmRoberta_tokenizer = XLMRobertaTokenizer.from_pretrained("/data5/isaac/xlm-roberta-base")
+bert_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+roberta_tokenizer = RobertaTokenizer.from_pretrained("roberta-base")
+bart_tokenizer = BartTokenizer.from_pretrained("facebook/bart-base")
 
 def tokenizer(text, tmodel="roberta", max_length=77):
     """tokenizer for different models

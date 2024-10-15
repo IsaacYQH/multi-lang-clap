@@ -1,10 +1,7 @@
 ## Copy important files and dirs
-
-```bash
-/data5/isaac/xlm-roberta-base
-/data6/isaac/datasets/song_label
-/data6/isaac/datasets/multi_genres_1w4_genList.csv
-/data6/isaac/cofac/myclap/logs/2024_08_13-16_41_48-model_HTSAT-base-lr_0.0001-b_80-j_6-p_fp32/
+If your server is offline, please download files needed for the following model loading.
+```python
+RobertaTokenizer.from_pretrained("roberta-base")
 ```
 
 ## Environment Setup
@@ -13,15 +10,18 @@ pip3 install -r requirements.txt
 ```
 
 ## Prepare webdataset
+For example nsynth:
 ```bash
-python utils\gen_webdataset.py
+python utils\data_rearrange_nsynth.py
+```
+Or convert from lmdb to webdataset
+```bash
+python utils\lmdb_to_webdataset.py
 ```
 
 ## Train
 ```bash
 bash train_script.sh
 ```
-## Test
-```bash
-python test\infer_Genre_demo.py
-```
+Related parameters used in training is explained in the shell script. If more information is needed, refer to ‘params.py’
+
