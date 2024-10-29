@@ -2,13 +2,11 @@ import os
 import json
 import webdataset as wds
 import soundfile as sf
-import numpy as np
 from itertools import islice
 import io
 import multiprocessing
-import pandas as pd
 import copy
-
+# TODO: change generation of json, generate after tar
 
 NOTE_QUA_LIST = [
     "Bright, a bright tone or brightness means a large amount of high frequency content and strong upper harmonics.",
@@ -69,7 +67,7 @@ def raw_dataset_samples_single_list(files, f, t: float=None):
             }
         yield sample
 
-def write_wds(root, save_root, data_list, info, shared_dict, start_shard: int = 0, t: float=None):
+def write_wds(root, save_root, data_list, info, start_shard: int = 0, t: float=None):
     #create .tar file
     assert(info in ["train","valid","test"]), "Wrong Training Label!"
     if not os.path.exists(save_root):
@@ -101,14 +99,14 @@ def write_wds(root, save_root, data_list, info, shared_dict, start_shard: int = 
         ss = sink.shard
     annotations.close()
     #create sizes.json file
-    # if os.path.exists(os.path.join(root, info, "sizes.json")):
-    #     with open(os.path.join(root, info, "sizes.json"), "r") as f:
-    #         data = json.load(f)
-    #         sizes_json = {**data, **sizes_json}
-    # with open(os.path.join(root, info, "sizes.json"), "w") as f:
-    #     json.dump(sizes_json, f, indent = 4)
-    for key in sizes_json.keys():
-        shared_dict[key] = sizes_json[key]
+    if os.path.exists(os.path.join(root, info, "sizes.json")):
+        with open(os.path.join(root, info, "sizes.json"), "r") as f:
+            data = json.load(f)
+            sizes_json = {**data, **sizes_json}
+    with open(os.path.join(root, info, "sizes.json"), "w") as f:
+        json.dump(sizes_json, f, indent = 4)
+    # for key in sizes_json.keys():
+    #     shared_dict[key] = sizes_json[key]
     return ss
 
 
@@ -132,8 +130,8 @@ if __name__ == "__main__":
 
     cpu_num = train_cpu + valid_cpu + test_cpu
     pool = multiprocessing.Pool(processes=cpu_num+3)
-    manager = multiprocessing.Manager()
-    shared_dict = {"train": manager.dict(), "valid": manager.dict(), "test": manager.dict()}
+    # manager = multiprocessing.Manager()
+    # shared_dict = {"train": manager.dict(), "valid": manager.dict(), "test": manager.dict()}
 
 
     r = list(range(0,len(train_list)-len(train_list)%train_cpu,len(train_list)//train_cpu))+[len(train_list)]
@@ -146,7 +144,7 @@ if __name__ == "__main__":
                 'save_root':save_path, 
                 'data_list':train_list[start:end], 
                 'info':'train', 
-                'shared_dict': shared_dict["train"],
+                # 'shared_dict': shared_dict["train"],
                 'start_shard': 0,
                 # 'start_index' : start,
                 # 'end_index': end,  
@@ -164,7 +162,7 @@ if __name__ == "__main__":
                 'save_root':save_path, 
                 'data_list':valid_list[start:end], 
                 'info':'valid',
-                'shared_dict': shared_dict["valid"],
+                # 'shared_dict': shared_dict["valid"],
                 'start_shard' : 0,
                 # 'start_index' : start,
                 # 'end_index': end,  
@@ -182,7 +180,7 @@ if __name__ == "__main__":
                 'save_root':save_path, 
                 'data_list':test_list[start:end], 
                 'info':'test',
-                'shared_dict': shared_dict["test"],
+                # 'shared_dict': shared_dict["test"],
                 'start_shard': 0,
                 # 'start_index' : start,
                 # 'end_index': end,  
@@ -200,9 +198,9 @@ if __name__ == "__main__":
 
     #create sizes.json file
     # if os.path.exists(os.path.join(root, info, "sizes.json")):
-    for info in ["train","valid","test"]:
-        with open(os.path.join(save_path, info, "sizes.json"), "w") as f:
-            json.dump(dict(shared_dict[info]), f, indent = 4)
+    # for info in ["train","valid","test"]:
+    #     with open(os.path.join(save_path, info, "sizes.json"), "w") as f:
+    #         json.dump(dict(shared_dict[info]), f, indent = 4)
 
 # TODO: 设置一个共享的全局变量保证不会同时重复写入
 # root = "/home/isaac/datasets/nsynth"
@@ -212,6 +210,6 @@ if __name__ == "__main__":
 #     text = {"text": []}
 #     for key in data.keys():
 #         text['text'].append(f"a {data[key]["instrument_source_str"]} {data[key]["instrument_source_str"]}"\
-#             + ("with a "+data[key]["qualities_str"] + " sound quality.") if data[key]["qualities_str"]\
+#             + ("with a "+data[key]["qualities_str"] + " sound· quality.") if data[key]["qualities_str"]\
 #                 else "with unknown sound quality.")
 #         text['text'].append(NOTE_QUA_LIST[data[key]["qualities"]==1])
