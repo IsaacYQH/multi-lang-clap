@@ -1,7 +1,6 @@
 import os
 import json
 import webdataset as wds
-import random
 import soundfile as sf
 import numpy as np
 from itertools import islice
@@ -70,13 +69,13 @@ def raw_dataset_samples_single_list(files, f, t: float=None):
             }
         yield sample
 
-def write_wds(root, data_list, info, shared_dict, start_shard: int = 0, t: float=None):
+def write_wds(root, save_root, data_list, info, shared_dict, start_shard: int = 0, t: float=None):
     #create .tar file
     assert(info in ["train","valid","test"]), "Wrong Training Label!"
-    if not os.path.exists(root):
-        os.makedirs(root)
-    if not os.path.exists(os.path.join(root, info)):
-        os.makedirs(os.path.join(root, info))
+    if not os.path.exists(save_root):
+        os.makedirs(save_root)
+    if not os.path.exists(os.path.join(save_root, info)):
+        os.makedirs(os.path.join(save_root, info))
     shard_num = 1+start_shard
     total_tmp1 = 0
     total_tmp2 = 1
@@ -85,11 +84,11 @@ def write_wds(root, data_list, info, shared_dict, start_shard: int = 0, t: float
     #     start_index=0
     #     max_num=start_index+max_num
     pid = str(os.getpid())
-    while os.path.exists(os.path.join(root, info, pid+'-0.tar')):
+    while os.path.exists(os.path.join(save_root, info, pid+'-0.tar')):
         pid += 1
     # samples=raw_dataset_samples_single_list(data_list,aug,audio_dscrp,t)
-    annotations = open(os.path.join("/home/isaac/datasets/nsynth", "nsynth-"+info, "examples.json"), "r")
-    with wds.ShardWriter(pattern=os.path.join(root, info, pid+"-%d.tar"), maxcount=512, maxsize = 1e9, start_shard = start_shard) as sink:
+    annotations = open(os.path.join(root, info, "examples.json"), "r")
+    with wds.ShardWriter(pattern=os.path.join(save_root, info, pid+"-%d.tar"), maxcount=512, maxsize = 1e9, start_shard = start_shard) as sink:
         for sample in islice(raw_dataset_samples_single_list(data_list,annotations,t), 0, None):
             if shard_num==sink.shard:
                 sink.write(sample)
@@ -114,13 +113,19 @@ def write_wds(root, data_list, info, shared_dict, start_shard: int = 0, t: float
 
 
 if __name__ == "__main__":
+    '''
+    Params:
+        root (str):  path of nsynth dataset in oringinal format, should contain three subfolder: train, valid, test
+        save_path (str): where you would like to save the data
+    '''
+    root = '/datasets/nsynth'
     save_path = "/home/isaac/datasets/nsynth_web"
     cpu_num = 100
     
     process_args=[]
-    train_list = get_all_files('/home/isaac/datasets/nsynth/nsynth-train/audio')
-    valid_list = get_all_files('/home/isaac/datasets/nsynth/nsynth-valid/audio')
-    test_list = get_all_files('/home/isaac/datasets/nsynth/nsynth-test/audio')
+    train_list = get_all_files('/datasets/nsynth/train/audio')
+    valid_list = get_all_files('/datasets/nsynth/valid/audio')
+    test_list = get_all_files('/datasets/nsynth/test/audio')
     train_cpu = int(len(train_list)/(len(train_list)+len(valid_list)+len(test_list))*cpu_num)
     valid_cpu = int(len(valid_list)/(len(train_list)+len(valid_list)+len(test_list))*cpu_num)
     test_cpu = cpu_num-train_cpu-valid_cpu
@@ -137,7 +142,8 @@ if __name__ == "__main__":
     for start, end in zip(r1, r2):
         process_args.append(
             {
-                'root':save_path, 
+                'root':root,
+                'save_root':save_path, 
                 'data_list':train_list[start:end], 
                 'info':'train', 
                 'shared_dict': shared_dict["train"],
@@ -154,7 +160,8 @@ if __name__ == "__main__":
     for start, end in zip(r1, r2):
         process_args.append(
             {
-                'root':save_path, 
+                'root':root,
+                'save_root':save_path, 
                 'data_list':valid_list[start:end], 
                 'info':'valid',
                 'shared_dict': shared_dict["valid"],
@@ -171,7 +178,8 @@ if __name__ == "__main__":
     for start, end in zip(r1, r2):
         process_args.append(
             {
-                'root':save_path, 
+                'root':root,
+                'save_root':save_path, 
                 'data_list':test_list[start:end], 
                 'info':'test',
                 'shared_dict': shared_dict["test"],
