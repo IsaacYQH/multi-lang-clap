@@ -19,6 +19,12 @@ Or convert from lmdb to webdataset
 python utils\lmdb_to_webdataset.py
 ```
 
+## Enable Multi-language Text Encoder
+set a_model as "xlm-roberta"
+```bash
+-- a_model xlm-roberta
+```
+
 ## Train
 ```bash
 bash train_script.sh
