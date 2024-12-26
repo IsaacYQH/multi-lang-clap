@@ -1,3 +1,5 @@
+# Multi-Language Contrastive Language-Audio Pretraining Model
+
 ## Copy important files and dirs
 If your server is offline, please download files needed for the following model loading.
 ```python
@@ -22,7 +24,7 @@ python utils\lmdb_to_webdataset.py
 ## Enable Multi-language Text Encoder
 set a_model as "xlm-roberta"
 ```bash
--- a_model xlm-roberta
+--a_model xlm-roberta
 ```
 
 ## Train
